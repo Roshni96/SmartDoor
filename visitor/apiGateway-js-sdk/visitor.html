@@ -1,0 +1,45 @@
+<html>
+<body>
+<p id = "responseMsg"></p>
+<br><br>
+<input type="number" id="AccessCode" placeholder="Type a message" style = "width : 2pts" #queryMessage />
+<br><br>
+<input id="msg_send_btn" type="button" value = "submit" onclick = "reply_click(this.id)">
+<script type="text/javascript" src="lib/axios/dist/axios.standalone.js"></script>
+<script type="text/javascript" src="lib/CryptoJS/rollups/hmac-sha256.js"></script>
+<script type="text/javascript" src="lib/CryptoJS/rollups/sha256.js"></script>
+<script type="text/javascript" src="lib/CryptoJS/components/hmac.js"></script>
+<script type="text/javascript" src="lib/CryptoJS/components/enc-base64.js"></script>
+<script type="text/javascript" src="lib/url-template/url-template.js"></script>
+<script type="text/javascript" src="lib/apiGatewayCore/sigV4Client.js"></script>
+<script type="text/javascript" src="lib/apiGatewayCore/apiGatewayClient.js"></script>
+<script type="text/javascript" src="lib/apiGatewayCore/simpleHttpClient.js"></script>
+<script type="text/javascript" src="lib/apiGatewayCore/utils.js"></script>
+<script type="text/javascript" src="apigClient.js"></script>
+<script type="text/javascript">
+
+	var apigClient = apigClientFactory.newClient();
+	var accessCodeTextBox = document.getElementById("AccessCode");
+    var accessOrDenied = document.getElementById("responseMsg");
+    
+	function reply_click(clicked_id)
+	{
+        code = document.getElementById("AccessCode").value;
+		console.log(code);
+		callVisitorApi({ "accessCode": code });
+        accessCodeTextBox.value = "";
+        accessOrDenied.innerHTML = 'Waiting for Response from <strong>Rekognition</strong>....';
+	}
+	
+	function callVisitorApi(query) {
+		apigClient.rekognitionVisitorPost({}, query, {}).then(function (result) {
+			console.log(result["data"]["message"])
+            accessOrDenied.innerHTML = '<h1>' + result["data"]["message"] + '</h1>'
+        }).catch(function (result) {
+            console.log(result);
+        });
+    }
+	
+</script>
+</body>
+</html>

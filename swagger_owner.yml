@@ -1,0 +1,82 @@
+swagger: '2.0'
+info:
+  title: SmartDoor Owner API
+  description: 'SmartDoor API Gateway for Owner.'
+  version: 1.0.0
+schemes:
+  - https
+basePath: /v1
+produces:
+  - application/json
+paths:
+  /rekognition:
+    post:
+      summary: The endpoint for the aws rekognition service.
+      description: |
+        This API takes in one or more messages from the client and returns
+        one or more messages as a response. The API leverages the rekognition
+        service of aws.
+      tags:
+        - NLU
+      operationId: sendMessage
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/RekognitionRequest'
+      responses:
+        '200':
+          description: rekognition response
+          schema:
+            $ref: '#/definitions/RekognitionResponse'
+        '403':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/Error'
+        '500':
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+definitions:
+  RekognitionRequest:
+    type: object
+    properties:
+      messages:
+        type: array
+        items:
+          $ref: '#/definitions/Message'
+  RekognitionResponse:
+    type: object
+    properties:
+      messages:
+        type: array
+        items:
+          $ref: '#/definitions/Message'
+  Message:
+    type: object
+    properties:
+      type:
+        type: string
+      unstructured:
+        $ref: '#/definitions/UnstructuredMessage'
+  UnstructuredMessage:
+    type: object
+    properties:
+      id:
+        type: string
+      text:
+        type: string
+      timestamp:
+        type: string
+        format: datetime
+  Error:
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
