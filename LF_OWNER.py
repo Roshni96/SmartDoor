@@ -1,9 +1,46 @@
 import json
-from boto3 import resource
+import boto3
+import time
+from random import randint
 from boto3.dynamodb.conditions import Key
 
 def lambda_handler(event, context):
     
-    dynamodb_resource = resource('dynamodb')
-    tablePasscodes = dynamodb_resource.Table('Visitors')
+    name=event["name"]
+    ph_no="+1" + event["phno"]
+    faceID=event["faceID"]
     
+    dynamodb_resource = boto3.client('dynamodb')
+    status1=dynamodb_resource.put_item(
+        TableName='Visitors',
+        Item= {
+            "FaceId":{"S":faceID},
+            "Name":{"S":name},
+            "PhoneNumber":{"S":ph_no}
+        }
+    )
+    status2=dynamodb_resource.put_item(
+        TableName='Passcodes',
+        Item= {
+            "FaceId":{"S":faceID},
+            "timeStamp":{"N":str(int(time.time()))},
+            "pin":{"S":str(GenerateOTP())}
+        }
+    )
+    return{
+      "status1":status1,
+      "status2":status2
+    } 
+    
+def GenerateOTP():
+    OTP=randint(100000,999999)
+    isUnique=False
+    passcodesTable = boto3.resource('dynamodb').Table('Passcodes').scan()["Items"]
+    passcodes =[]
+    for item in passcodesTable:
+        passcodes.append(item["pin"])
+    passcodes= set(passcodes)
+    while(OTP in passcodes):
+        OTP=randint(100000,999999)
+            
+    return OTP
