@@ -8,17 +8,17 @@ def lambda_handler(event, context):
     
     name=event["name"]
     ph_no="+1" + event["phno"]
-    S3Object=event["S3Object"].split('/')[-1]
+    #S3Object=event["S3Object"].split('/')[-1]
     
     # name="Manav"
     # ph_no="+19293326898"
-    # S3Object="https://liverekognitionphoto.s3-us-west-2.amazonaws.com/Manav.jpg".split('/')[-1]
+    # S3Object="https://liverekognitionphoto.s3-us-west-2.amazonaws.com/frame.jpg".split('/')[-1]
     
     client = boto3.client('rekognition') 
-    response = client.index_faces(CollectionId = 'rekVideoBlog',
-                                Image={'S3Object':{'Bucket':'liverekognitionphoto','Name':'Manav.jpg'}},
+    response = client.index_faces(CollectionId = 'MyCollection',
+                                Image={'S3Object':{'Bucket':'liverekognitionphoto','Name':'frame.jpg'}},
                                 DetectionAttributes=(),
-                                ExternalImageId=S3Object)
+                                ExternalImageId='frame.jpg')
     
     #return response
     faceID=response['FaceRecords'][0]['Face']['FaceId']
