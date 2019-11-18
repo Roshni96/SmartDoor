@@ -6,9 +6,10 @@
 <br><br>
 <input type="number" id="PhNumberField" placeholder="Phone Number" style = "width : 2pts" #queryMessage />
 <br><br>
-<input type="text" id="FaceIdField" placeholder="Face ID" style = "width : 2pts" #queryMessage />
+<input type="text" id="S3ObjectLink" placeholder="Photo Link" style = "width : 2pts" #queryMessage />
 <br><br>
 <input id="msg_send_btn" type="button" value = "submit" onclick = "reply_click(this.id)">
+<label id="ResponseMsg"></label>
 <script type="text/javascript" src="lib/axios/dist/axios.standalone.js"></script>
 <script type="text/javascript" src="lib/CryptoJS/rollups/hmac-sha256.js"></script>
 <script type="text/javascript" src="lib/CryptoJS/rollups/sha256.js"></script>
@@ -25,16 +26,28 @@
 	var apigClient = apigClientFactory.newClient();
 	var NameTextBox = document.getElementById("NameField");
     var PhNumberTextBox = document.getElementById("PhNumberField");
-    var FaceIdField = document.getElementById("FaceIdField");
+    var S3Object = document.getElementById("S3ObjectLink");
+    var message=document.getElementById("ResponseMsg");
     
 	function reply_click(clicked_id)
 	{
-		callOwnerApi({ "name": NameTextBox.value, "phno": PhNumberTextBox.value, "faceID": FaceIdField.value});
+		callOwnerApi({ "name": NameTextBox.value, "phno": PhNumberTextBox.value, "S3Object": S3Object.value});
+        message.innerHTML='<h1>Adding Visitor Information...</h1>';
 	}
 	
 	function callOwnerApi(query) {
+        console.log(query)
 		apigClient.rekognitionPost({}, query, {}).then(function (result) {
 			console.log(result)
+            if (result["data"]["status1"]["ResponseMetadata"]["HTTPStatusCode"]==200 
+                    && result["data"]["status2"]["ResponseMetadata"]["HTTPStatusCode"]==200){
+                message.innerHTML='<h1>Visitor ' + NameTextBox.value + ' Added</h1>';
+                NameTextBox.value="";
+                PhNumberTextBox.value="";
+                S3Object.value="";
+            } else{
+                message.innerHTML='<h1>Error Adding Visitor</h1>';
+            }
         }).catch(function (result) {
             console.log(result);
         });
