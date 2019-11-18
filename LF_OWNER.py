@@ -10,14 +10,25 @@ def lambda_handler(event, context):
     ph_no="+1" + event["phno"]
     S3Object=event["S3Object"].split('/')[-1]
     
-    faceID = index_face('MyCollection', 'liverekognitionphoto', S3Object)
-
+    # name="Manav"
+    # ph_no="+19293326898"
+    # S3Object="https://liverekognitionphoto.s3-us-west-2.amazonaws.com/Manav.jpg".split('/')[-1]
+    
+    client = boto3.client('rekognition') 
+    response = client.index_faces(CollectionId = 'rekVideoBlog',
+                                Image={'S3Object':{'Bucket':'liverekognitionphoto','Name':'Manav.jpg'}},
+                                DetectionAttributes=(),
+                                ExternalImageId=S3Object)
+    
+    #return response
+    faceID=response['FaceRecords'][0]['Face']['FaceId']
+    
     dynamodb_resource = boto3.client('dynamodb')
     
     status1=dynamodb_resource.put_item(
         TableName='Visitors',
         Item= {
-            "FaceId":{"S":response['FaceRecords']['Face']['FaceId']},
+            "FaceId":{"S":faceID},
             "Name":{"S":name},
             "PhoneNumber":{"S":ph_no}
         }
@@ -49,19 +60,3 @@ def GenerateOTP():
         OTP=randint(100000,999999)
             
     return OTP
-
-
-def index_face(collection_id, bucket_name, bucket_file_name):
-    
-        print("Indexing[" + bucket_name + ":" + bucket_file_name + "] into collection[" + collection_id + "]")
-        client = boto3.client('rekognition') 
-        response = client.index_faces(CollectionId = collection_id,
-                                    Image={'S3Object':{'Bucket':bucket_name,'Name':bucket_file_name}},
-                                    DetectionAttributes=(),
-                                    ExternalImageId=bucket_file_name)
-
-        if len(response['FaceRecords']) > 0:
-            return response['FaceRecords'][0]['Face']['FaceId']
-        else:
-            print("No Faces Found in image")
-            return None
