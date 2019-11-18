@@ -6,8 +6,6 @@
 <br><br>
 <input type="number" id="PhNumberField" placeholder="Phone Number" style = "width : 2pts" #queryMessage />
 <br><br>
-<input type="text" id="S3ObjectLink" placeholder="Photo Link" style = "width : 2pts" #queryMessage />
-<br><br>
 <input id="msg_send_btn" type="button" value = "submit" onclick = "reply_click(this.id)">
 <label id="ResponseMsg"></label>
 <script type="text/javascript" src="lib/axios/dist/axios.standalone.js"></script>
@@ -26,12 +24,11 @@
 	var apigClient = apigClientFactory.newClient();
 	var NameTextBox = document.getElementById("NameField");
     var PhNumberTextBox = document.getElementById("PhNumberField");
-    var S3Object = document.getElementById("S3ObjectLink");
     var message=document.getElementById("ResponseMsg");
     
 	function reply_click(clicked_id)
 	{
-		callOwnerApi({ "name": NameTextBox.value, "phno": PhNumberTextBox.value, "S3Object": S3Object.value});
+		callOwnerApi({ "name": NameTextBox.value, "phno": PhNumberTextBox.value});
         message.innerHTML='<h1>Adding Visitor Information...</h1>';
 	}
 	
@@ -44,7 +41,6 @@
                 message.innerHTML='<h1>Visitor ' + NameTextBox.value + ' Added</h1>';
                 NameTextBox.value="";
                 PhNumberTextBox.value="";
-                S3Object.value="";
             } else{
                 message.innerHTML='<h1>Error Adding Visitor</h1>';
             }
