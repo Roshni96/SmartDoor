@@ -8,11 +8,6 @@ def lambda_handler(event, context):
     
     name=event["name"]
     ph_no="+1" + event["phno"]
-    #S3Object=event["S3Object"].split('/')[-1]
-    
-    # name="Manav"
-    # ph_no="+19293326898"
-    # S3Object="https://liverekognitionphoto.s3-us-west-2.amazonaws.com/frame.jpg".split('/')[-1]
     
     client = boto3.client('rekognition') 
     response = client.index_faces(CollectionId = 'MyCollection',
@@ -33,15 +28,20 @@ def lambda_handler(event, context):
             "PhoneNumber":{"S":ph_no}
         }
     )
-    
+    OTP=str(GenerateOTP())
     status2=dynamodb_resource.put_item(
         TableName='Passcodes',
         Item= {
             "FaceId":{"S":faceID},
             "timeStamp":{"N":str(int(time.time()))},
-            "pin":{"S":str(GenerateOTP())}
+            "pin":{"S":OTP}
         }
     )
+    
+    msg = 'This is your one time code: ' + OTP
+    sns_client = boto3.client('sns',aws_access_key_id="AKIAWABDYZXZYICTFKVD", aws_secret_access_key="NLkS+/IvNUK0l25uCwHWSKXVxZauZWFlvkm92JK2",region_name="us-west-2")
+    response=sns_client.publish(PhoneNumber=ph_no, Message=msg,)
+    
     return{
       "status1":status1,
       "status2":status2

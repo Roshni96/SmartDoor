@@ -15,10 +15,6 @@ def get_details(face_id):
 		if 'Item' in result.keys():
 			phone = result['Item']['PhoneNumber']['S']
 			return phone
-	
-	
-
-
 
 
 def lambda_handler(event, context):
@@ -46,7 +42,8 @@ def lambda_handler(event, context):
 				    
 				    msg = 'This is your one time code: ' + OTP
 				    sns_client = boto3.client('sns',aws_access_key_id="AKIAWABDYZXZYICTFKVD", aws_secret_access_key="NLkS+/IvNUK0l25uCwHWSKXVxZauZWFlvkm92JK2",region_name="us-west-2")
-				    response=sns_client.publish(PhoneNumber=phone_num, Message=msg)
+				    response=sns_client.publish(PhoneNumber=phone_num, Message=msg,)
+				    response_x=sns_client.publish(PhoneNumber=phone_num,Message='https://smartdoor-rekognition.s3.amazonaws.com/visitor/visitor.html',)
 				    print(msg)
 				    print("message sent")
 				    #print(message)
@@ -82,10 +79,10 @@ def lambda_handler(event, context):
 				    	unmatchedFace += 1
 				    	s3Client=boto3.client('s3')
 				    	object1=s3Client.generate_presigned_url('get_object',Params={'Bucket':'liverekognitionphoto','Key': 'frame.jpg'})
-				    	#sns_client = boto3.client('sns',aws_access_key_id="AKIAWABDYZXZYICTFKVD", aws_secret_access_key="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",region_name="us-east-1")
-				    	#response1=sns_client.publish(PhoneNumber= "+19293326898", Message='<a href={0}>link</a>'.format(object1))
-				    	#response2=sns_client.publish(PhoneNumber= "+19293326898",Message='https://smartdoor-rekognition.s3.amazonaws.com/owner/owner.html')
-				    	#print(response1)
+				    	sns_client = boto3.client('sns',aws_access_key_id="AKIAWABDYZXZYICTFKVD", aws_secret_access_key="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",region_name="us-east-1")
+				    	response1=sns_client.publish(PhoneNumber= "+19293326898", Message='<a href={0}>link</a>'.format(object1))
+				    	response2=sns_client.publish(PhoneNumber= "+19293326898",Message='https://smartdoor-rekognition.s3.amazonaws.com/owner/owner.html')
+				    	print(response1)
 				    	print(object1)
 				    
 

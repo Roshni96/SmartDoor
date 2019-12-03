@@ -1,0 +1,92 @@
+---
+swagger: "2.0"
+info:
+  version: "1.0.0"
+  title: "SmartDoor Visitor API"
+host: "2j1cixoh57.execute-api.us-west-2.amazonaws.com"
+basePath: "/beta"
+schemes:
+- "https"
+paths:
+  /rekognitionVisitor:
+    post:
+      operationId: "sendMessage"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "RekognitionVisitorRequest"
+        required: true
+        schema:
+          $ref: "#/definitions/RekognitionVisitorRequest"
+      responses:
+        200:
+          description: "200 response"
+          schema:
+            $ref: "#/definitions/RekognitionVisitorResponse"
+          headers:
+            Access-Control-Allow-Origin:
+              type: "string"
+        500:
+          description: "500 response"
+          schema:
+            $ref: "#/definitions/Error"
+        403:
+          description: "403 response"
+          schema:
+            $ref: "#/definitions/Error"
+    options:
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "200 response"
+          headers:
+            Access-Control-Allow-Origin:
+              type: "string"
+            Access-Control-Allow-Methods:
+              type: "string"
+            Access-Control-Allow-Headers:
+              type: "string"
+definitions:
+  Message:
+    type: "object"
+    properties:
+      type:
+        type: "string"
+      unstructured:
+        $ref: "#/definitions/UnstructuredMessage"
+  RekognitionVisitorResponse:
+    type: "object"
+    properties:
+      messages:
+        type: "array"
+        items:
+          $ref: "#/definitions/Message"
+  UnstructuredMessage:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+      text:
+        type: "string"
+      timestamp:
+        type: "string"
+        format: "datetime"
+  Error:
+    type: "object"
+    properties:
+      code:
+        type: "integer"
+        format: "int32"
+      message:
+        type: "string"
+  RekognitionVisitorRequest:
+    type: "object"
+    properties:
+      messages:
+        type: "array"
+        items:
+          $ref: "#/definitions/Message"
